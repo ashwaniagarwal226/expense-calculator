@@ -17,6 +17,9 @@ public record EpnxTransaction(
         @Column(name = "TRANSACTION_NAME", nullable = false, length = 10000)
         String transactionName,
 
+        @Column(name = "TRANSACTION_TYPE", length = 500)
+        String transactionType,
+
         @Column(name = "TRANSACTION_DATE", nullable = false)
         LocalDateTime transactionDate,
 
