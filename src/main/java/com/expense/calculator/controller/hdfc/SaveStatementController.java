@@ -1,12 +1,13 @@
 package com.expense.calculator.controller.hdfc;
 
+import com.expense.calculator.hdfc.DTOs.UploadResponse;
 import com.expense.calculator.service.excel.ExcelReadSaveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 
 @RestController
@@ -20,10 +21,10 @@ public class SaveStatementController {
         this.excelReadSaveService = excelReadSaveService;
     }
 
-    @GetMapping("/transaction")
-    public ResponseEntity<String> readAndSaveStatement() throws IOException {
-        excelReadSaveService.readAndSaveExcelFile("/Users/ashwiniagarwal/Downloads/Acct Statement_XX3928_21072024.xls");
-        return ResponseEntity.ok().body("Hello");
+    @PostMapping("/transactionupload")
+    public ResponseEntity<UploadResponse> readAndSaveStatement(@RequestParam("file") MultipartFile file) throws IOException {
+        excelReadSaveService.readAndSaveExcelFile(file);
+        return ResponseEntity.ok(new UploadResponse("File uploaded successfully", file.getOriginalFilename(), "success"));
     }
 
 }

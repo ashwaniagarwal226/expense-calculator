@@ -1,16 +1,17 @@
 package com.expense.calculator.service.excel.impl;
 
-import com.expense.calculator.utils.ExpenseCalculatorUtils;
 import com.expense.calculator.domain.EpnxTransaction;
 import com.expense.calculator.repository.TransactionRepository;
 import com.expense.calculator.service.excel.ExcelReadSaveService;
+import com.expense.calculator.utils.ExpenseCalculatorUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,10 +34,10 @@ public class ExcelReadSaveServiceImpl implements ExcelReadSaveService {
 
     @Override
     @Transactional
-    public void readAndSaveExcelFile(String filePath) throws IOException {
+    public void readAndSaveExcelFile(MultipartFile file) throws IOException {
         List<List<String>> data = new ArrayList<>();
 
-        try (FileInputStream fis = new FileInputStream(filePath);
+        try (InputStream fis = file.getInputStream();
              Workbook workbook = WorkbookFactory.create(fis)) {
 
             Sheet sheet = workbook.getSheetAt(0);
