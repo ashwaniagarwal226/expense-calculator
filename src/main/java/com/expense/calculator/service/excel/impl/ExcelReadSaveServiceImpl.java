@@ -1,23 +1,39 @@
 package com.expense.calculator.service.excel.impl;
 
-import com.expense.calculator.service.excel.ExcelReadService;
+import com.expense.calculator.utils.ExpenseCalculatorUtils;
+import com.expense.calculator.domain.EpnxTransaction;
+import com.expense.calculator.repository.TransactionRepository;
+import com.expense.calculator.service.excel.ExcelReadSaveService;
 import org.apache.poi.ss.usermodel.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.expense.calculator.utils.TransactionUtils.getTransactionType;
 
 @Service
-public class ExcelReadServiceImpl implements ExcelReadService {
+public class ExcelReadSaveServiceImpl implements ExcelReadSaveService {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+    private static final String TYPE_API = "API";
+
+    @Autowired
+    private TransactionRepository transactionRepository;
+
 
     @Override
-    public List<List<String>> readExcelFile(String filePath) throws IOException {
+    @Transactional
+    public void readAndSaveExcelFile(String filePath) throws IOException {
         List<List<String>> data = new ArrayList<>();
 
         try (FileInputStream fis = new FileInputStream(filePath);
@@ -62,9 +78,6 @@ public class ExcelReadServiceImpl implements ExcelReadService {
                             case FORMULA:
                                 rowData.add(cell.getCellFormula());
                                 break;
-                            case BLANK:
-                                rowData.add("");
-                                break;
                             default:
                                 rowData.add("");
                         }
@@ -75,8 +88,14 @@ public class ExcelReadServiceImpl implements ExcelReadService {
                 }
             }
         }
-        return data;
+        List<String> refnums = convertDataToTransactionDomain(data).stream().map(EpnxTransaction::getRefNum).collect(Collectors.toList());
+        List<EpnxTransaction> transactionList = transactionRepository.findAllByrefNumIn(refnums);
+        if (transactionList != null && transactionList.size() > 0) {
+            return;
+        }
+        transactionRepository.saveAll(convertDataToTransactionDomain(data));
     }
+
     private boolean isValidDate(String dateStr) {
         try {
             dateFormat.parse(dateStr);
@@ -93,4 +112,39 @@ public class ExcelReadServiceImpl implements ExcelReadService {
             return dateStr;
         }
     }
+
+    private List<EpnxTransaction> convertDataToTransactionDomain(List<List<String>> data) {
+        boolean isFirstStarList = false;
+        List<EpnxTransaction> transactionList = new ArrayList<>();
+
+        for (List<String> row : data) {
+            if (ExpenseCalculatorUtils.checkAllStars(row) && !isFirstStarList) {
+                isFirstStarList = true;
+            } else if (ExpenseCalculatorUtils.checkAllStars(row) && isFirstStarList) {
+                break;
+            } else {
+                if (!ExpenseCalculatorUtils.containsLabels(row)) {
+                    EpnxTransaction transaction = convertRowToDomain(row);
+                    transactionList.add(transaction);
+                }
+            }
+        }
+        return transactionList;
+    }
+
+    private EpnxTransaction convertRowToDomain(List<String> row) {
+        LocalDateTime transactionDate = ExpenseCalculatorUtils.convertToHDFCDateToLocalDateTime(row.get(0));
+        String transactonName = row.get(1);
+        String chqRefNo = row.get(2);
+        LocalDateTime valueDate = ExpenseCalculatorUtils.convertToHDFCDateToLocalDateTime(row.get(3));
+        BigDecimal withdrawalAmt = "".trim().equalsIgnoreCase(row.get(4)) ? null : new BigDecimal(row.get(4));
+        BigDecimal depositAmt = "".trim().equalsIgnoreCase(row.get(5)) ? null : new BigDecimal(row.get(5));
+        //BigDecimal closingBalance = "".trim().equalsIgnoreCase(row.get(6)) ? null : new BigDecimal(row.get(6));
+
+        return new EpnxTransaction(null, transactonName, getTransactionType(transactonName),
+                transactionDate, chqRefNo, valueDate, withdrawalAmt, depositAmt, LocalDateTime.now(),
+                LocalDateTime.now(), TYPE_API);
+    }
+
+
 }
