@@ -136,8 +136,15 @@ public class ExcelReadSaveServiceImpl implements ExcelReadSaveService {
             }
         }
 
+        List<TransactionSummaryDTO> dtos = new ArrayList<>(summaryMap.values());
 
-        return new ArrayList<>(summaryMap.values());
+        dtos.forEach(dto -> {
+            BigDecimal totalSpent = dto.getTransSummary().stream()
+                    .map(summary -> summary.getTotalAmount() != null ? summary.getTotalAmount() : BigDecimal.ZERO)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            dto.setTotalSpent(totalSpent);
+        });
+        return dtos;
     }
 
     private boolean isValidDate(String dateStr) {

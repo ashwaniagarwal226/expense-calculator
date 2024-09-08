@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -14,5 +15,6 @@ import java.util.List;
 public class TransactionSummaryDTO {
     private String month;
     private Integer year;
+    private BigDecimal totalSpent=BigDecimal.ZERO;
     List<TransactionTypeSummary> transSummary;
 }
