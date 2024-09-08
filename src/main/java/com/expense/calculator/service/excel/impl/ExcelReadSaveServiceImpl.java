@@ -4,6 +4,11 @@ import com.expense.calculator.domain.EpnxTransaction;
 import com.expense.calculator.repository.TransactionRepository;
 import com.expense.calculator.service.excel.ExcelReadSaveService;
 import com.expense.calculator.utils.ExpenseCalculatorUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +20,9 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +37,9 @@ public class ExcelReadSaveServiceImpl implements ExcelReadSaveService {
 
     @Autowired
     private TransactionRepository transactionRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
 
     @Override
@@ -89,12 +99,11 @@ public class ExcelReadSaveServiceImpl implements ExcelReadSaveService {
                 }
             }
         }
-        List<String> refnums = convertDataToTransactionDomain(data).stream().map(EpnxTransaction::getRefNum).collect(Collectors.toList());
-        List<EpnxTransaction> transactionList = transactionRepository.findAllByrefNumIn(refnums);
-        if (transactionList != null && transactionList.size() > 0 && !ExpenseCalculatorUtils.checkIfAllZero(transactionList.get(0).getRefNum())) {
+        List<EpnxTransaction> transactionList = convertDataToTransactionDomain(data);
+        if (transactionRepository.findByMonthAndYear(transactionList.get(0).getTransactionDate()).size() > 0) {
             return;
         }
-        transactionRepository.saveAll(convertDataToTransactionDomain(data));
+        transactionRepository.saveAll(transactionList);
     }
 
     private boolean isValidDate(String dateStr) {
@@ -146,6 +155,5 @@ public class ExcelReadSaveServiceImpl implements ExcelReadSaveService {
                 transactionDate, chqRefNo, valueDate, withdrawalAmt, depositAmt, LocalDateTime.now(),
                 LocalDateTime.now(), TYPE_API);
     }
-
 
 }
