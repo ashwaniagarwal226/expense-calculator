@@ -91,7 +91,7 @@ public class ExcelReadSaveServiceImpl implements ExcelReadSaveService {
         }
         List<String> refnums = convertDataToTransactionDomain(data).stream().map(EpnxTransaction::getRefNum).collect(Collectors.toList());
         List<EpnxTransaction> transactionList = transactionRepository.findAllByrefNumIn(refnums);
-        if (transactionList != null && transactionList.size() > 0) {
+        if (transactionList != null && transactionList.size() > 0 && !ExpenseCalculatorUtils.checkIfAllZero(transactionList.get(0).getRefNum())) {
             return;
         }
         transactionRepository.saveAll(convertDataToTransactionDomain(data));

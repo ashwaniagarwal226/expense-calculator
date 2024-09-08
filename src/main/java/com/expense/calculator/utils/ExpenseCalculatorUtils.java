@@ -28,4 +28,8 @@ public class ExpenseCalculatorUtils {
         LocalDate localDate = LocalDate.parse(date, formatter);
         return localDate.atStartOfDay();
     }
+    public static boolean checkIfAllZero(String st) {
+        return st.chars().allMatch(c -> c == '0');
+    }
+
 }
