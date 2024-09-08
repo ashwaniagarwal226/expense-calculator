@@ -1,6 +1,9 @@
 package com.expense.calculator.service.excel.impl;
 
 import com.expense.calculator.domain.EpnxTransaction;
+import com.expense.calculator.hdfc.DTOs.TransactionSummaryDTO;
+import com.expense.calculator.hdfc.DTOs.TransactionTypeSummary;
+import com.expense.calculator.hdfc.DTOs.YearMonthKey;
 import com.expense.calculator.repository.TransactionRepository;
 import com.expense.calculator.service.excel.ExcelReadSaveService;
 import com.expense.calculator.utils.ExpenseCalculatorUtils;
@@ -24,7 +27,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.expense.calculator.utils.TransactionUtils.getTransactionType;
@@ -103,7 +108,36 @@ public class ExcelReadSaveServiceImpl implements ExcelReadSaveService {
         if (transactionRepository.findByMonthAndYear(transactionList.get(0).getTransactionDate()).size() > 0) {
             return;
         }
+
         transactionRepository.saveAll(transactionList);
+    }
+
+    @Override
+    public List<TransactionSummaryDTO> getGraphData() {
+        List<Object[]> results = transactionRepository.findTransactionSummaries();
+        Map<YearMonthKey, TransactionSummaryDTO> summaryMap = new HashMap<>();
+
+
+        for (Object[] row : results) {
+            String month = (String) row[2];
+            Integer year = (Integer) row[3];
+            YearMonthKey yearMonthKey = new YearMonthKey(month, year);
+            if (summaryMap.get(yearMonthKey) == null) {
+                TransactionSummaryDTO summaryDTO = new TransactionSummaryDTO();
+                List<TransactionTypeSummary> summaryTypeList = new ArrayList<>();
+                summaryDTO.setMonth(month);
+                summaryDTO.setYear(year);
+                summaryTypeList.add(new TransactionTypeSummary((String) row[1], (BigDecimal) row[0]));
+                summaryDTO.setTransSummary(summaryTypeList);
+                summaryMap.put(yearMonthKey,summaryDTO);
+            } else {
+                List<TransactionTypeSummary> summaryTypeList = summaryMap.get(yearMonthKey).getTransSummary();
+                summaryTypeList.add(new TransactionTypeSummary((String) row[1], (BigDecimal) row[0]));
+            }
+        }
+
+
+        return new ArrayList<>(summaryMap.values());
     }
 
     private boolean isValidDate(String dateStr) {
