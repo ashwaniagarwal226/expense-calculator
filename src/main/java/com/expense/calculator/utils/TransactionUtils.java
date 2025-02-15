@@ -105,6 +105,12 @@ public class TransactionUtils {
         if(containsWholeWord(transactionName,"TOIT")){
             return TransactionType.LIQUOR.getTransactionType();
         }
+        if(containsWholeWord(transactionName,"ZERODHA")){
+            return TransactionType.INVESTMENT.getTransactionType();
+        }
+        if(containsWholeWord(transactionName,"LIC")){
+            return TransactionType.INVESTMENT.getTransactionType();
+        }
         return "OTHERS";
     }
 

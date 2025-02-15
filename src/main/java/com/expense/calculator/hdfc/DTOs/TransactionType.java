@@ -14,7 +14,8 @@ public enum TransactionType {
     SHOPPING("SHOPPING"),
     URBANCOMPANY("URBANCOMPANY"),
     SUBSCRIPTIONS("SUBSCRIPTIONS"),
-    LIQUOR("LIQUOR");
+    LIQUOR("LIQUOR"),
+    INVESTMENT("INVESTMENT");
 
     private final String transactiontype;
 
