@@ -21,4 +21,8 @@ public interface TransactionRepository extends JpaRepository<EpnxTransaction,Lon
             "group by transaction_type , trans_month,trans_year order by  trans_month,trans_year",nativeQuery = true)
     List<Object[]> findTransactionSummaries();
 
+    @Query("SELECT e FROM EpnxTransaction e WHERE refNum in (:refNums)")
+    List<EpnxTransaction> findTransactionByRefNo(List<String> refNums);
+
+
 }

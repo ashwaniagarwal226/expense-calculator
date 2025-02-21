@@ -110,6 +110,8 @@ public class TransactionUtils {
         }
         if(containsWholeWord(transactionName,"LIC")){
             return TransactionType.INVESTMENT.getTransactionType();
+        }if(containsWholeWord(transactionName,"UPI-NA-NA")){
+            return TransactionType.UPI_LITE.getTransactionType();
         }
         return "OTHERS";
     }

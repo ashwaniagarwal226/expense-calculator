@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.expense.calculator.utils.TransactionUtils.getTransactionType;
 
@@ -98,9 +99,17 @@ public class ExcelReadSaveServiceImpl implements ExcelReadSaveService {
             }
         }
         List<EpnxTransaction> transactionList = convertDataToTransactionDomain(data);
-        if (transactionRepository.findByMonthAndYear(transactionList.get(0).getTransactionDate()).size() > 0) {
-            return;
-        }
+
+        List<EpnxTransaction> existingTransactions = transactionRepository.findTransactionByRefNo(transactionList.stream().map(x -> x.getRefNum()).toList());
+        Map<String, EpnxTransaction> existingTransactionMap = existingTransactions.stream().collect(Collectors.toMap(EpnxTransaction::getRefNum, epnxTransaction -> epnxTransaction));
+
+        transactionList.forEach(transaction -> {
+            EpnxTransaction existing = existingTransactionMap.get(transaction.getRefNum());
+            if (existing != null) {
+                transaction.setTransId(existing.getTransId());
+            }
+        });
+
 
         transactionRepository.saveAll(transactionList);
     }
@@ -122,7 +131,7 @@ public class ExcelReadSaveServiceImpl implements ExcelReadSaveService {
                 summaryDTO.setYear(year);
                 summaryTypeList.add(new TransactionTypeSummary((String) row[1], (BigDecimal) row[0]));
                 summaryDTO.setTransSummary(summaryTypeList);
-                summaryMap.put(yearMonthKey,summaryDTO);
+                summaryMap.put(yearMonthKey, summaryDTO);
             } else {
                 List<TransactionTypeSummary> summaryTypeList = summaryMap.get(yearMonthKey).getTransSummary();
                 summaryTypeList.add(new TransactionTypeSummary((String) row[1], (BigDecimal) row[0]));
