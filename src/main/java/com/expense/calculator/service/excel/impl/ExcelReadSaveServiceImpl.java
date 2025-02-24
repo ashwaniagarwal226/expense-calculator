@@ -7,6 +7,7 @@ import com.expense.calculator.hdfc.DTOs.YearMonthKey;
 import com.expense.calculator.repository.TransactionRepository;
 import com.expense.calculator.service.excel.ExcelReadSaveService;
 import com.expense.calculator.utils.ExpenseCalculatorUtils;
+import com.expense.calculator.utils.ObjectChecksumUtil;
 import jakarta.persistence.EntityManager;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.expense.calculator.utils.TransactionUtils.getTransactionType;
@@ -99,6 +98,15 @@ public class ExcelReadSaveServiceImpl implements ExcelReadSaveService {
             }
         }
         List<EpnxTransaction> transactionList = convertDataToTransactionDomain(data);
+        transactionList.forEach( x -> {
+            if("000000000000000".equals(x.getRefNum())){
+                try {
+                    x.setRefNum(ObjectChecksumUtil.generateChecksum(x));
+                } catch (IOException | NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         List<EpnxTransaction> existingTransactions = transactionRepository.findTransactionByRefNo(transactionList.stream().map(x -> x.getRefNum()).toList());
         Map<String, EpnxTransaction> existingTransactionMap = existingTransactions.stream().collect(Collectors.toMap(EpnxTransaction::getRefNum, epnxTransaction -> epnxTransaction));
