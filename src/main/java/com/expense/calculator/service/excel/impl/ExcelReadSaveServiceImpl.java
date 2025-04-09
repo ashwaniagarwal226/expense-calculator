@@ -39,6 +39,21 @@ public class ExcelReadSaveServiceImpl implements ExcelReadSaveService {
     @Autowired
     private EntityManager entityManager;
 
+    private static final Map<String, Integer> MONTH_ORDER = Map.ofEntries(
+            Map.entry("January", 1),
+            Map.entry("February", 2),
+            Map.entry("March", 3),
+            Map.entry("April", 4),
+            Map.entry("May", 5),
+            Map.entry("June", 6),
+            Map.entry("July", 7),
+            Map.entry("August", 8),
+            Map.entry("September", 9),
+            Map.entry("October", 10),
+            Map.entry("November", 11),
+            Map.entry("December", 12)
+    );
+
 
     @Override
     @Transactional
@@ -154,6 +169,14 @@ public class ExcelReadSaveServiceImpl implements ExcelReadSaveService {
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             dto.setTotalSpent(totalSpent);
         });
+
+        dtos = dtos.stream()
+                .sorted(Comparator
+                        .comparing(TransactionSummaryDTO::getYear, Comparator.reverseOrder())
+                        .thenComparing(dto -> MONTH_ORDER.getOrDefault(
+                                capitalize(dto.getMonth().toLowerCase()), 0), Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+
         return dtos;
     }
 
@@ -207,4 +230,8 @@ public class ExcelReadSaveServiceImpl implements ExcelReadSaveService {
                 LocalDateTime.now(), TYPE_API);
     }
 
+    private static String capitalize(String str) {
+        if (str == null || str.isEmpty()) return str;
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+    }
 }
