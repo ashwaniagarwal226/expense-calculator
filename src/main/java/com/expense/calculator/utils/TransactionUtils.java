@@ -116,6 +116,9 @@ public class TransactionUtils {
         }if(containsWholeWord(transactionName,"UPI-NA-NA")){
             return TransactionType.UPI_LITE.getTransactionType();
         }
+        if(containsWholeWord(transactionName,"UPI-LITE")){
+            return TransactionType.UPI_LITE.getTransactionType();
+        }
         if(containsWholeWord(transactionName,"oasis")){
             return TransactionType.OASIS_BREEZE.getTransactionType();
         }
