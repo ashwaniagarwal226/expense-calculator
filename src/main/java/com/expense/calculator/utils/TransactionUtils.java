@@ -35,6 +35,9 @@ public class TransactionUtils {
         if(containsWholeWord(transactionName,"CHAMPA DEVI")){
             return TransactionType.PARENTS.getTransactionType();
         }
+        if(containsWholeWord(transactionName,"COUNTRY DELIGHT")){
+            return TransactionType.PARENTS.getTransactionType();
+        }
         if(containsWholeWord(transactionName,"HATHWAY")){
             return TransactionType.INTERNET.getTransactionType();
         }
