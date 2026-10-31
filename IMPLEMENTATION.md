@@ -31,7 +31,7 @@ This document explains what changed in the expense calculator, why it changed, a
 ```bash
 cd intelliJWorkspace/expense-calculator
 export GEMINI_API_KEY=your-key            # https://aistudio.google.com/apikey  (optional)
-export GEMINI_MODEL=gemini-2.5-flash      # optional, this is the default
+export GEMINI_MODEL=gemini-3.8-flash      # optional, this is the default
 ./mvnw spring-boot:run                    # http://localhost:8081/api/expense
 ```
 
@@ -268,8 +268,8 @@ Spring Boot was bumped from 3.3.2 to **3.5.16** because Spring AI 1.x requires B
 
 ```properties
 spring.ai.google.genai.api-key=${GEMINI_API_KEY:}
-spring.ai.google.genai.chat.options.model=${GEMINI_MODEL:gemini-2.5-flash}
-spring.ai.google.genai.chat.options.temperature=0.2
+spring.ai.google.genai.chat.options.model=${GEMINI_MODEL:gemini-3.8-flash}
+spring.ai.google.genai.chat.options.thinking-level=${GEMINI_THINKING_LEVEL:LOW}
 expense.ai.enabled=${EXPENSE_AI_ENABLED:true}
 expense.ai.batch-size=25
 expense.ai.learn-rules=true
@@ -434,5 +434,5 @@ Tests use an in-memory H2 (`application-test.properties`), so they never touch `
 * **New person:** Profiles page.
 * **New merchant or UPI-note mapping:** Rules page, or tick "remember" when fixing a transaction.
 * **New category:** Rules page → *Add a category*. Write a good Gemini hint in the description.
-* **Different model:** set `GEMINI_MODEL`, e.g. `gemini-2.5-flash-lite` (cheaper) or `gemini-2.5-pro`.
+* **Different model:** set `GEMINI_MODEL`, e.g. `gemini-3.5-flash-lite` (cheaper). `gemini-2.5-*` models are closed to new API keys.
 * **Another LLM provider:** swap the Spring AI starter, e.g. `spring-ai-starter-model-openai`, and update `AiAvailabilityEnvironmentPostProcessor.API_KEY`. `AiCategorizer` and `SavingsAdvisorService` depend only on `ChatClient`.

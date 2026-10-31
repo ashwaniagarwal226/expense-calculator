@@ -97,7 +97,7 @@ Started ExpenseCalculatorApplication in 3.4 seconds
 
 ```bash
 curl http://localhost:8081/api/expense/v1/ai/status
-# {"enabled":true,"provider":"gemini","model":"gemini-2.5-flash","hint":null}
+# {"enabled":true,"provider":"gemini","model":"gemini-3.8-flash","hint":null}
 ```
 
 `"enabled": false` means it's running without Gemini. That's fine, and you can add the key later.
@@ -162,7 +162,19 @@ npm run preview    # serves dist/ locally to try it
    setx GEMINI_API_KEY "AIza..."
    ```
 
-The default model is `gemini-2.5-flash`, which is fast and cheap. To change it, set `GEMINI_MODEL`, e.g. `gemini-2.5-flash-lite` or `gemini-2.5-pro`.
+   **Or** keep it in a file. Create `application-local.properties` in the project root:
+
+   ```properties
+   spring.ai.google.genai.api-key=AIza...
+   ```
+
+   This file is **gitignored** and loaded automatically when the API runs from the project root, which includes IntelliJ and `./mvnw spring-boot:run`. It's the easiest option with IntelliJ.
+
+   > ⚠️ Never paste the key into `src/main/resources/application.properties`. That file is committed to git.
+
+The default model is `gemini-3.8-flash`, which is fast, cheap and Google's recommendation for new projects. To change it, set `GEMINI_MODEL`, e.g. `gemini-3.5-flash-lite` (cheaper). See the [current model list](https://ai.google.dev/gemini-api/docs/models).
+
+> `gemini-2.5-*` models are **not available to new API keys**. If you see *"This model … is no longer available to new users"*, you are on an old model name: unset `GEMINI_MODEL`, or set it to `gemini-3.8-flash`.
 
 Without a key, everything except the ✨ features still works.
 
@@ -284,7 +296,7 @@ Open **Save more**, choose a period (1, 3, 6 or 12 months) and click **Analyse**
 
 ![Save more](docs/screenshots/save-more.png)
 
-With a Gemini key, the tips are written by Gemini from your category totals, top merchants and recurring payments. They name the actual merchants and amounts, and the result shows "Analysed … by gemini-2.5-flash". Results are cached, so click **Regenerate** for fresh advice. *The screenshot above shows the rule-based fallback you get without a key.*
+With a Gemini key, the tips are written by Gemini from your category totals, top merchants and recurring payments. They name the actual merchants and amounts, and the result shows "Analysed … by gemini-3.8-flash". Results are cached, so click **Regenerate** for fresh advice. *The screenshot above shows the rule-based fallback you get without a key.*
 
 ### Dark mode & phone
 
@@ -335,7 +347,8 @@ Restart the API and the new bank appears in the bank dropdown.
 | Variable | Default | Purpose |
 |---|---|---|
 | `GEMINI_API_KEY` | *(empty: AI off)* | Gemini Developer API key |
-| `GEMINI_MODEL` | `gemini-2.5-flash` | Gemini model to use |
+| `GEMINI_MODEL` | `gemini-3.8-flash` | Gemini model to use |
+| `GEMINI_THINKING_LEVEL` | `LOW` | How much Gemini 3 "thinks" before answering: `MINIMAL`, `LOW`, `MEDIUM` or `HIGH`. Higher is slower and costs more. |
 | `EXPENSE_AI_ENABLED` | `true` | Set to `false` to keep AI off even when a key is set |
 
 ### `src/main/resources/application.properties`
@@ -371,7 +384,8 @@ Restart the API and the new bank appears in the bank dropdown.
 | UI shows *"Could not load insights … Is the backend running on port 8081?"* | Start the API (step 1). Check with `curl http://localhost:8081/api/expense/v1/ai/status`. |
 | Upload error: *"Could not recognise the bank for this statement"* | Pick the bank in the dropdown instead of *Detect automatically*. |
 | Upload error: *"Could not find the transaction table header for …"* | The file's column names differ from `banks.yml`. Add the exact heading to that bank's `headers` and restart. |
-| **Gemini off** even though I set the key | The key must be visible to the **API** process. Restart it from a terminal where `echo $GEMINI_API_KEY` prints the key, or set it in IntelliJ's run configuration. |
+| **Gemini off** even though I set the key | The key must be visible to the **API** process. Either restart it from a terminal where `echo $GEMINI_API_KEY` prints the key, or put it in `application-local.properties` in the project root and make sure the working directory is the project root. |
+| `This model models/gemini-2.5-flash is no longer available to new users` | Your `GEMINI_MODEL` points at a retired model. Unset it, or set `GEMINI_MODEL=gemini-3.8-flash`, then restart the API. |
 | Upload says `Gemini: Gemini call failed …` | The upload still succeeded and those rows are left uncategorised. Check the key, your quota, and that `GEMINI_MODEL` exists. Retry later with **Categorise unknown with Gemini**. |
 | `Port 8081 was already in use` | Another copy is running. Stop it with `lsof -i :8081` then `kill <pid>`, or change `server.port`. |
 | Phone can't open the UI | Make sure `npm run dev` shows a *Network* URL and that the phone is on the same Wi-Fi. The Mac firewall must allow Node and Java incoming connections. |

@@ -34,3 +34,6 @@ mvnw
 mvnw.cmd
 target
 .mvn
+
+### Local secrets (Gemini API key etc.) ###
+application-local.properties
