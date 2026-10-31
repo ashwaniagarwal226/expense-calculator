@@ -206,9 +206,11 @@ public class SavingsAdvisorService {
                     double perMonth = counts.get(e.getKey()) / (double) n;
                     BigDecimal saving = monthly.multiply(BigDecimal.valueOf(0.2)).setScale(0, RoundingMode.HALF_UP);
                     if (saving.signum() <= 0) return;
-                    String detail = String.format("You spend about ₹%,d a month on %s across ~%.0f payments. "
+                    int payments = counts.get(e.getKey());
+                    String detail = String.format("You spend about ₹%,d a month on %s (%d payment%s in %d month%s). "
                                     + "Setting a monthly cap 20%% lower than today saves ₹%,d.",
-                            monthly.longValue(), c.name(), perMonth, saving.longValue());
+                            monthly.longValue(), c.name(), payments, payments == 1 ? "" : "s", n, n == 1 ? "" : "s",
+                            saving.longValue());
                     if (perMonth >= 12) {
                         detail += " With this many small payments, batching orders or planning ahead makes the biggest difference.";
                     }
