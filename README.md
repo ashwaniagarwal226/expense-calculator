@@ -1,3 +1,13 @@
+# Expense Calculator
+
+Multi-bank (HDFC, ICICI, SBI, Axis, Kotak) expense tracker with a keyword rule engine and Gemini AI
+(via Spring AI) for unknown transactions and savings advice. See **[IMPLEMENTATION.md](IMPLEMENTATION.md)**.
+
+```bash
+export GEMINI_API_KEY=...   # optional - https://aistudio.google.com/apikey
+./mvnw spring-boot:run      # http://localhost:8081/api/expense
+```
+
 # Read Me First
 The following was discovered as part of building this project:
 

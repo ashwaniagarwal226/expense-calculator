@@ -1,0 +1,94 @@
+# Statement layouts per bank. Adding a bank = adding a block here, no Java change needed.
+# Header spellings are compared after lower-casing and removing everything except a-z/0-9,
+# so "Withdrawal Amt." and "withdrawal amt" are the same. A header also matches when it
+# *starts with* an alias of 5+ chars (e.g. "Withdrawal Amount (INR )" matches "withdrawalamount").
+# Roles: date, valueDate, narration, ref, withdrawal, deposit, balance
+#        or amount + drCr for banks that export a single signed amount column.
+# remark-pattern: regex with a named group "remark" that pulls the note you typed in the UPI app
+#        ("taxi", "meds") out of the narration. Notes are matched by rules with scope REMARK.
+#        HDFC's pattern is verified against real statements; the others follow the banks' documented
+#        narration formats and may need adjusting.
+expense:
+  # UPI notes that are app/bank boiler-plate rather than something you typed (compared upper-case,
+  # a note that starts with one of these is ignored too)
+  remark-ignore: [ "UPI", "NA", "NO REMARKS", "PAYMENT FROM PHONE", "PAYMENT", "PAY", "UPIINTENT", "UPI INTENT",
+                   "UPI TRANSACTION", "UPI MANDATE", "COLLECT", "COLLECT-PAY-REQUES", "SENT USING PAYTM",
+                   "SENT FROM PAYTM", "PAYMENT VIA", "PAY VIA RAZORPAY", "PAYVIARAZORPAY", "REQUEST FROM",
+                   "YOU ARE PAYING FOR", "PAYMENT FOR UPI AU", "OID", "TRANSFER", "SENT VIA" ]
+  banks:
+    - code: HDFC
+      display-name: HDFC Bank
+      detect-keywords: [ "HDFC BANK", "HDFC0" ]
+      # UPI-<payee>-<vpa>-<ifsc>-<12 digit ref>-<note>
+      remark-pattern: '^UPI-.*-\d{12}-(?<remark>[^-].*)$'
+      date-formats: [ "dd/MM/yy", "dd/MM/yyyy" ]
+      headers:
+        date: [ "Date" ]
+        narration: [ "Narration" ]
+        ref: [ "Chq./Ref.No.", "Chq/Ref No" ]
+        valueDate: [ "Value Dt", "Value Date" ]
+        withdrawal: [ "Withdrawal Amt.", "Withdrawal Amount" ]
+        deposit: [ "Deposit Amt.", "Deposit Amount" ]
+        balance: [ "Closing Balance" ]
+
+    - code: ICICI
+      display-name: ICICI Bank
+      detect-keywords: [ "ICICI BANK", "ICIC0" ]
+      # UPI/<ref>/<note>/<vpa>/<bank>/...
+      remark-pattern: '^UPI/\d{9,}/(?<remark>[^/]+)/[^/]*@'
+      date-formats: [ "dd/MM/yyyy", "dd-MM-yyyy", "dd/MM/yy", "dd-MMM-yyyy" ]
+      headers:
+        date: [ "Transaction Date", "Txn Date", "Date" ]
+        valueDate: [ "Value Date" ]
+        narration: [ "Transaction Remarks", "Remarks", "Particulars", "Description" ]
+        ref: [ "Cheque Number", "Chq No", "Ref No" ]
+        withdrawal: [ "Withdrawal Amount", "Withdrawal Amt", "Debit" ]
+        deposit: [ "Deposit Amount", "Deposit Amt", "Credit" ]
+        balance: [ "Balance" ]
+
+    - code: SBI
+      display-name: State Bank of India
+      detect-keywords: [ "STATE BANK OF INDIA", "SBIN0" ]
+      # ...UPI/DR/<ref>/<payee>/<bank>/<vpa>/<note>
+      remark-pattern: 'UPI/(?:DR|CR)/\d+/[^/]*/[^/]*/[^/]*@[^/]*/(?<remark>[^/]+)'
+      date-formats: [ "d MMM yyyy", "dd MMM yyyy", "dd-MM-yyyy", "dd/MM/yyyy", "dd-MMM-yy" ]
+      headers:
+        date: [ "Txn Date", "Transaction Date", "Date" ]
+        valueDate: [ "Value Date" ]
+        narration: [ "Description", "Narration", "Particulars" ]
+        ref: [ "Ref No./Cheque No.", "Ref No", "Cheque No" ]
+        withdrawal: [ "Debit", "Withdrawal" ]
+        deposit: [ "Credit", "Deposit" ]
+        balance: [ "Balance" ]
+
+    - code: AXIS
+      display-name: Axis Bank
+      detect-keywords: [ "AXIS BANK", "UTIB0" ]
+      # UPI/P2A/<ref>/<payee>/<bank>/<note>
+      remark-pattern: '^UPI/P2[AM]/\d+/[^/]*/[^/]*/(?<remark>[^/]+)'
+      date-formats: [ "dd-MM-yyyy", "dd/MM/yyyy", "dd-MM-yy" ]
+      headers:
+        date: [ "Tran Date", "Transaction Date", "Date" ]
+        valueDate: [ "Value Date" ]
+        narration: [ "Particulars", "Description", "Narration" ]
+        ref: [ "Chq No", "CHQNO", "Cheque No" ]
+        withdrawal: [ "DR", "Debit", "Withdrawal Amt" ]
+        deposit: [ "CR", "Credit", "Deposit Amt" ]
+        balance: [ "BAL", "Balance" ]
+
+    - code: KOTAK
+      display-name: Kotak Mahindra Bank
+      detect-keywords: [ "KOTAK MAHINDRA", "KKBK0" ]
+      # UPI/<payee>/<ref>/<note>
+      remark-pattern: '^UPI/[^/]+/\d{9,}/(?<remark>[^/]+)'
+      date-formats: [ "dd-MM-yyyy", "dd/MM/yyyy", "dd MMM yyyy", "dd-MM-yy" ]
+      headers:
+        date: [ "Transaction Date", "Date" ]
+        valueDate: [ "Value Date" ]
+        narration: [ "Description", "Narration", "Particulars" ]
+        ref: [ "Chq / Ref No.", "Chq/Ref No", "Ref No" ]
+        withdrawal: [ "Withdrawal (Dr)", "Debit", "Withdrawal" ]
+        deposit: [ "Deposit (Cr)", "Credit", "Deposit" ]
+        amount: [ "Amount" ]
+        drCr: [ "Dr / Cr", "Dr/Cr", "Type" ]
+        balance: [ "Balance" ]
