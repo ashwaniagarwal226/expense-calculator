@@ -1,0 +1,163 @@
+# Initial categories and keyword rules. Loaded into the database on first start-up
+# (categories missing from the DB are added on every start; rules only when the rule table is empty).
+# After that, manage everything from the UI ("Rules" page) or the /v1/categories and /v1/rules APIs.
+#
+# kind: EXPENSE | INCOME | INVESTMENT | TRANSFER     essential: needs (true) vs wants (false)
+expense:
+  seed:
+    categories:
+      # --- categories carried over from the original TransactionType enum (codes unchanged) ---
+      - { code: SWIGGY,        display-name: Food Delivery & Quick Commerce, icon: "🍔", kind: EXPENSE, essential: false, description: "Food delivery and 10-minute grocery apps: Swiggy, Instamart, Zomato, Blinkit, Zepto" }
+      - { code: RENT,          display-name: Rent,               icon: "🏠", kind: EXPENSE, essential: true,  description: "House rent and furniture/appliance rental (Rentomojo, Cityfurnish)" }
+      - { code: PARENTS,       display-name: Parents & Family,   icon: "👨‍👩‍👧", kind: EXPENSE, essential: true,  description: "Money sent to parents / family members and household milk delivery (Country Delight)" }
+      - { code: INTERNET,      display-name: Internet,           icon: "🌐", kind: EXPENSE, essential: true,  description: "Broadband and fibre internet bills (Hathway, JioFiber, ACT, Airtel Xstream)" }
+      - { code: MAID,          display-name: House Help,         icon: "🧹", kind: EXPENSE, essential: true,  description: "Payments to maid, cook or other domestic help" }
+      - { code: DINNER,        display-name: Dining Out,         icon: "🍽️", kind: EXPENSE, essential: false, description: "Restaurants, cafes, Swiggy Dineout, EazyDiner" }
+      - { code: TRAVEL,        display-name: Travel,             icon: "✈️", kind: EXPENSE, essential: false, description: "Flights, trains, buses, hotels: IRCTC, MakeMyTrip, IndiGo, redBus" }
+      - { code: CAB_SERVICE,   display-name: Cabs & Rides,       icon: "🚕", kind: EXPENSE, essential: false, description: "Uber, Ola, Rapido, taxis and auto rides" }
+      - { code: SALARY,        display-name: Salary,             icon: "💰", kind: INCOME,  essential: false, description: "Salary credits from employer" }
+      - { code: INTEREST,      display-name: Interest,           icon: "🏦", kind: INCOME,  essential: false, description: "Interest credited by the bank" }
+      - { code: SHOPPING,      display-name: Shopping,           icon: "🛍️", kind: EXPENSE, essential: false, description: "Online and offline shopping: Amazon, Flipkart, Myntra, Ajio, Nykaa, malls" }
+      - { code: URBANCOMPANY,  display-name: Home Services,      icon: "🛠️", kind: EXPENSE, essential: false, description: "Urban Company and other home services, salon at home, repairs" }
+      - { code: SUBSCRIPTIONS, display-name: Subscriptions,      icon: "📺", kind: EXPENSE, essential: false, description: "Netflix, Apple, Spotify, YouTube Premium, Hotstar, Prime and other recurring digital services" }
+      - { code: LIQUOR,        display-name: Bars & Liquor,      icon: "🍷", kind: EXPENSE, essential: false, description: "Pubs, breweries, bars and liquor stores (Toit, Gulp)" }
+      - { code: INVESTMENT,    display-name: Investments,        icon: "📈", kind: INVESTMENT, essential: false, description: "Stocks, mutual funds, SIPs, LIC premiums: Zerodha, Groww, AUM Capital" }
+      - { code: UPI_LITE,      display-name: UPI Lite Top-ups,   icon: "📱", kind: EXPENSE, essential: false, description: "UPI Lite wallet top-ups (small everyday payments)" }
+      - { code: OASIS_BREEZE,  display-name: Oasis Breeze,       icon: "🏢", kind: EXPENSE, essential: true,  description: "Payments to Oasis Breeze (apartment / society)" }
+      # --- new generic categories so Gemini has sensible buckets for unknown merchants ---
+      - { code: GROCERIES,     display-name: Groceries,          icon: "🛒", kind: EXPENSE, essential: true,  description: "Supermarkets and grocery stores: BigBasket, DMart, Reliance Fresh, More, local kirana" }
+      - { code: FUEL,          display-name: Fuel,               icon: "⛽", kind: EXPENSE, essential: true,  description: "Petrol pumps: Indian Oil, HPCL, BPCL, Shell" }
+      - { code: MEDICAL,       display-name: Health & Medical,   icon: "💊", kind: EXPENSE, essential: true,  description: "Hospitals, clinics, pharmacies, lab tests: Apollo, PharmEasy, 1mg, Practo" }
+      - { code: UTILITIES,     display-name: Bills & Utilities,  icon: "💡", kind: EXPENSE, essential: true,  description: "Electricity, water, gas, mobile recharge and postpaid bills" }
+      - { code: INSURANCE,     display-name: Insurance,          icon: "🛡️", kind: EXPENSE, essential: true,  description: "Health, term, vehicle insurance premiums" }
+      - { code: EMI_LOAN,      display-name: EMI & Loans,        icon: "🏧", kind: EXPENSE, essential: true,  description: "Loan EMIs and repayments (home, car, personal, BNPL)" }
+      - { code: EDUCATION,     display-name: Education,          icon: "🎓", kind: EXPENSE, essential: true,  description: "Courses, school/college fees, books" }
+      - { code: ENTERTAINMENT, display-name: Entertainment,      icon: "🎬", kind: EXPENSE, essential: false, description: "Movies, events, gaming: BookMyShow, PVR, INOX, District" }
+      - { code: FITNESS,       display-name: Fitness,            icon: "🏋️", kind: EXPENSE, essential: false, description: "Gym and fitness memberships: Cult.fit, gyms, sports" }
+      - { code: PERSONAL_CARE, display-name: Personal Care,      icon: "💇", kind: EXPENSE, essential: false, description: "Salons, spas, grooming" }
+      - { code: GIFTS_DONATIONS, display-name: Gifts & Donations, icon: "🎁", kind: EXPENSE, essential: false, description: "Gifts, charity and donations" }
+      - { code: CASH_WITHDRAWAL, display-name: Cash Withdrawal,  icon: "💵", kind: EXPENSE, essential: false, description: "ATM cash withdrawals" }
+      - { code: CREDIT_CARD_BILL, display-name: Credit Card Bill, icon: "💳", kind: TRANSFER, essential: false, description: "Credit card bill payments (CRED, card autopay) - spending is on the card statement" }
+      - { code: SELF_TRANSFER, display-name: Self Transfer,      icon: "🔁", kind: TRANSFER, essential: false, description: "Transfers between the user's own accounts or wallets" }
+      - { code: REFUND,        display-name: Refunds & Cashback, icon: "↩️", kind: INCOME,  essential: false, description: "Refunds, reversals and cashback credits" }
+      - { code: OTHERS,        display-name: Others,             icon: "📦", kind: EXPENSE, essential: false, description: "Anything that does not fit another category" }
+
+    rules:
+      # --- ported 1:1 from the old TransactionUtils if/else chain ---
+      - { keyword: "HERE SOLUTIONS", category: SALARY }
+      - { keyword: "RENT", category: RENT }
+      - { keyword: "EDUNETWORK", category: RENT }          # Rentomojo
+      - { keyword: "CITYFURNISH", category: RENT }
+      - { keyword: "SWIGGY", category: SWIGGY }
+      - { keyword: "SWIGGYSTORES", category: SWIGGY }
+      - { keyword: "BUNDL TECHNOLOGIES", category: SWIGGY } # Swiggy
+      - { keyword: "CHAMPA DEVI", category: PARENTS }
+      - { keyword: "COUNTRY DELIGHT", category: PARENTS }
+      - { keyword: "HATHWAY", category: INTERNET }
+      - { keyword: "JIOFIBER", category: INTERNET }
+      - { keyword: "SHAILAJA", category: MAID }
+      - { keyword: "GROFERS", category: SWIGGY }           # Blinkit
+      - { keyword: "BLINKIT", category: SWIGGY }
+      - { keyword: "GEDDIT", category: SWIGGY }            # Zepto
+      - { keyword: "ZEPTONOW", category: SWIGGY }
+      - { keyword: "ZOMATO", category: SWIGGY }
+      - { keyword: "ZOMATOCOM", category: SWIGGY }
+      - { keyword: "SWIGGY DINEOUT", category: DINNER }    # longer keyword now wins over SWIGGY
+      - { keyword: "TAXI", category: CAB_SERVICE }
+      - { keyword: "UBER", category: CAB_SERVICE }
+      - { keyword: "OLACABS", category: CAB_SERVICE }
+      - { keyword: "INTEREST", category: INTEREST }
+      - { keyword: "AMAZON", category: SHOPPING }
+      - { keyword: "MYNTRA", category: SHOPPING }
+      - { keyword: "URBANCOMPANY", category: URBANCOMPANY }
+      - { keyword: "NETFLIX", category: SUBSCRIPTIONS }
+      - { keyword: "APPLE", category: SUBSCRIPTIONS }
+      - { keyword: "APPLE SERVICES", category: SUBSCRIPTIONS }
+      - { keyword: "GULP", category: LIQUOR }
+      - { keyword: "TOIT", category: LIQUOR }
+      - { keyword: "ZERODHA", category: INVESTMENT }
+      - { keyword: "AUM CAPITAL", category: INVESTMENT }
+      - { keyword: "LIC", category: INVESTMENT }
+      - { keyword: "UPI-NA-NA", category: UPI_LITE }
+      - { keyword: "UPI-LITE", category: UPI_LITE }
+      - { keyword: "OASIS", category: OASIS_BREEZE }
+      # --- common Indian merchants for the new categories ---
+      - { keyword: "SALARY", category: SALARY }
+      - { keyword: "RAPIDO", category: CAB_SERVICE }
+      - { keyword: "FLIPKART", category: SHOPPING }
+      - { keyword: "AJIO", category: SHOPPING }
+      - { keyword: "NYKAA", category: SHOPPING }
+      - { keyword: "AMAZON PRIME", category: SUBSCRIPTIONS }
+      - { keyword: "SPOTIFY", category: SUBSCRIPTIONS }
+      - { keyword: "HOTSTAR", category: SUBSCRIPTIONS }
+      - { keyword: "YOUTUBE", category: SUBSCRIPTIONS }
+      - { keyword: "BIGBASKET", category: GROCERIES }
+      - { keyword: "DMART", category: GROCERIES }
+      - { keyword: "AVENUE SUPERMARTS", category: GROCERIES }
+      - { keyword: "RELIANCE FRESH", category: GROCERIES }
+      - { keyword: "INDIAN OIL", category: FUEL }
+      - { keyword: "HPCL", category: FUEL }
+      - { keyword: "BPCL", category: FUEL }
+      - { keyword: "APOLLO", category: MEDICAL }
+      - { keyword: "PHARMEASY", category: MEDICAL }
+      - { keyword: "PRACTO", category: MEDICAL }
+      - { keyword: "BESCOM", category: UTILITIES }
+      - { keyword: "BBMP", category: UTILITIES }
+      - { keyword: "POLICYBAZAAR", category: INSURANCE }
+      - { keyword: "BOOKMYSHOW", category: ENTERTAINMENT }
+      - { keyword: "PVR", category: ENTERTAINMENT }
+      - { keyword: "INOX", category: ENTERTAINMENT }
+      - { keyword: "CULTFIT", category: FITNESS }
+      - { keyword: "CURefit", category: FITNESS }
+      - { keyword: "IRCTC", category: TRAVEL }
+      - { keyword: "MAKEMYTRIP", category: TRAVEL }
+      - { keyword: "INDIGO", category: TRAVEL }
+      - { keyword: "REDBUS", category: TRAVEL }
+      - { keyword: "GROWW", category: INVESTMENT }
+      - { keyword: "INDMONEY", category: INVESTMENT }
+      - { keyword: "CRED", category: CREDIT_CARD_BILL }
+      - { keyword: "ATW", category: CASH_WITHDRAWAL }      # HDFC ATM withdrawal
+      - { keyword: "NWD", category: CASH_WITHDRAWAL }      # HDFC other-bank ATM withdrawal
+      - { keyword: "ATM WDL", category: CASH_WITHDRAWAL }
+      # --- UPI notes you type in GPay/PhonePe/Paytm (scope REMARK: matched only against the note,
+      #     checked before every narration rule because your own note is the strongest signal) ---
+      - { keyword: "TAXI", category: CAB_SERVICE, scope: REMARK }
+      - { keyword: "CAB", category: CAB_SERVICE, scope: REMARK }
+      - { keyword: "AUTO", category: CAB_SERVICE, scope: REMARK }
+      - { keyword: "RIDE", category: CAB_SERVICE, scope: REMARK }
+      - { keyword: "MEDS", category: MEDICAL, scope: REMARK }
+      - { keyword: "MEDICINE", category: MEDICAL, scope: REMARK }
+      - { keyword: "MEDICINES", category: MEDICAL, scope: REMARK }
+      - { keyword: "MEDICAL", category: MEDICAL, scope: REMARK }
+      - { keyword: "DOCTOR", category: MEDICAL, scope: REMARK }
+      - { keyword: "HOSPITAL", category: MEDICAL, scope: REMARK }
+      - { keyword: "PHARMACY", category: MEDICAL, scope: REMARK }
+      - { keyword: "FOOD", category: DINNER, scope: REMARK }
+      - { keyword: "LUNCH", category: DINNER, scope: REMARK }
+      - { keyword: "DINNER", category: DINNER, scope: REMARK }
+      - { keyword: "BREAKFAST", category: DINNER, scope: REMARK }
+      - { keyword: "GROCERY", category: GROCERIES, scope: REMARK }
+      - { keyword: "GROCERIES", category: GROCERIES, scope: REMARK }
+      - { keyword: "VEGETABLES", category: GROCERIES, scope: REMARK }
+      - { keyword: "FRUITS", category: GROCERIES, scope: REMARK }
+      - { keyword: "MILK", category: GROCERIES, scope: REMARK }
+      - { keyword: "FAMILY", category: PARENTS, scope: REMARK }
+      - { keyword: "RENT", category: RENT, scope: REMARK }
+      - { keyword: "MAID", category: MAID, scope: REMARK }
+      - { keyword: "COOK", category: MAID, scope: REMARK }
+      - { keyword: "PETROL", category: FUEL, scope: REMARK }
+      - { keyword: "FUEL", category: FUEL, scope: REMARK }
+      - { keyword: "SALON", category: PERSONAL_CARE, scope: REMARK }
+      - { keyword: "HAIRCUT", category: PERSONAL_CARE, scope: REMARK }
+      - { keyword: "MOVIE", category: ENTERTAINMENT, scope: REMARK }
+      - { keyword: "GYM", category: FITNESS, scope: REMARK }
+      - { keyword: "GIFT", category: GIFTS_DONATIONS, scope: REMARK }
+      - { keyword: "DONATION", category: GIFTS_DONATIONS, scope: REMARK }
+      - { keyword: "TRIP", category: TRAVEL, scope: REMARK }
+      - { keyword: "HOTEL", category: TRAVEL, scope: REMARK }
+      - { keyword: "SHOPPING", category: SHOPPING, scope: REMARK }
+      - { keyword: "CLOTHES", category: SHOPPING, scope: REMARK }
+      - { keyword: "DRINKS", category: LIQUOR, scope: REMARK }
+      - { keyword: "BEER", category: LIQUOR, scope: REMARK }
+      - { keyword: "ELECTRICITY", category: UTILITIES, scope: REMARK }
+      - { keyword: "RECHARGE", category: UTILITIES, scope: REMARK }
